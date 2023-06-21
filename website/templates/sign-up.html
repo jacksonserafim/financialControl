@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %} Registrar {% endblock %}
+{% block content %}
+<form id="registro-form" method="post">
+    <h3 align="center">Registrar</h3>
+    <div class="form-group">
+        <label for="email">Digite seu e-mail</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Seu email" required>
+
+        <label for="nome">Nome</label>
+        <input type="text" class="form-control" id="nome" name="nome" placeholder="Seu nome" required minlength="1" maxlength="50">
+
+        <label for="sobrenome">Sobrenome</label>
+        <input type="text" class="form-control" id="sobrenome" name="sobrenome" placeholder="Seu sobrenome" required minlength="1" maxlength="50">
+
+        <label for="password">Senha</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Digite sua senha"
+               required maxlength="24" minlength="8">
+
+        <label for="password2">Repita a senha</label>
+        <input type="password" class="form-control" id="password2" name="password2" placeholder="Repita a sua senha"
+               required maxlength="24" minlength="8">
+
+        <span  id="erro-senha"  style="color: red;"></span><br>
+
+        <input id="btn_registrar" type="submit" value="Registrar" class="btn btn-primary" disabled>
+    </div>
+</form>
+<script src="{{ url_for('static', filename='registro.js') }}"></script>
+{% endblock %}
