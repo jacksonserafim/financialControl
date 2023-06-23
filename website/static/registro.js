@@ -1,5 +1,6 @@
-// registro.js
 document.addEventListener('DOMContentLoaded', function() {
+  const nomeInput = document.getElementById('nome');
+  const sobrenomeInput = document.getElementById('sobrenome');
   const senhaInput = document.getElementById('password');
   const confirmaSenhaInput = document.getElementById('password2');
   const erroSenhaElement = document.getElementById('erro-senha');
@@ -8,10 +9,25 @@ document.addEventListener('DOMContentLoaded', function() {
   const inputRegistrar = document.getElementById('btn_registrar');
   let timeoutMostrarInput;
 
+  function capitalizeFirstLetter(value) {
+    const exceptions = ['da', 'do', 'de', 'dos', 'das', 'e']; // Palavras que devem ser ignoradas
+
+    return value
+      .toLowerCase()
+      .split(' ')
+      .map(function(word) {
+        if (!exceptions.includes(word)) {
+          return word.charAt(0).toUpperCase() + word.slice(1);
+        } else {
+          return word;
+        }
+      })
+      .join(' ');
+  }
+
   function validarSenhas() {
     if (confirmaSenhaInput.value === '') {
       erroSenhaElement.textContent = '';
-
       inputRegistrar.disabled = true;
     } else if (senhaInput.value !== confirmaSenhaInput.value) {
       erroSenhaElement.textContent = 'As senhas não coincidem.';
@@ -44,5 +60,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
   camposObrigatorios.forEach(function(campo) {
     campo.addEventListener('input', verificarCamposPreenchidos);
+  });
+
+  nomeInput.addEventListener('blur', function() {
+    this.value = capitalizeFirstLetter(this.value);
+  });
+
+  sobrenomeInput.addEventListener('blur', function() {
+    this.value = capitalizeFirstLetter(this.value);
   });
 });

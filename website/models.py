@@ -3,6 +3,14 @@ from flask_login import UserMixin
 from sqlalchemy.sql import func
 
 
+class Permission(db.Model):
+    __tablename__ = 'permissions'
+    id = db.Column(db.Integer, primary_key=True)
+    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    guest_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    permission = db.Column(db.Integer)
+
+
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -11,7 +19,8 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(30))
     expenses = db.relationship('Expense', backref='user')
-    permissions = db.relationship('Permission', backref='user')
+    permissions = db.relationship('Permission', foreign_keys=[Permission.owner_id], backref='owner')
+    guest_permissions = db.relationship('Permission', foreign_keys=[Permission.guest_id], backref='guest')
 
 
 class Category(db.Model):
@@ -44,11 +53,3 @@ class Installment(db.Model):
     installment_number = db.Column(db.Integer)
     value = db.Column(db.Float)
     due_date = db.Column(db.String(10))
-
-
-class Permission(db.Model):
-    __tablename__ = 'permissions'
-    id = db.Column(db.Integer, primary_key=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    guest_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    permission = db.Column(db.Integer)
