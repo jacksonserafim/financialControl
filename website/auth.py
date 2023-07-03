@@ -2,13 +2,17 @@ from flask import Blueprint, render_template, request, redirect, make_response, 
 from .models import User
 from werkzeug.security import generate_password_hash, check_password_hash
 from website import db
-from flask_login import login_user, login_required, logout_user, current_user
+from datetime import datetime
+from flask_login import login_user, login_required, logout_user, current_user, user_logged_out
 
 auth = Blueprint('auth', __name__)
 
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('views.home'))
+
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
@@ -19,6 +23,8 @@ def login():
             if check_password_hash(user.password, password):
                 flash('Logado com sucesso!', category='success')
                 login_user(user, remember=True)
+                user.last_login = datetime.utcnow()
+                db.session.commit()
                 return redirect(url_for('views.home'))
 
             else:
@@ -26,7 +32,7 @@ def login():
         else:
             flash('E-mail não registrado', category='error')
 
-    return render_template('login.html')
+    return render_template('login.html', user=current_user)
 
 
 @auth.route('/logout')
@@ -39,6 +45,9 @@ def logout():
 
 @auth.route('sign-up', methods=['GET', 'POST'])
 def sign_up():
+    if current_user.is_authenticated:
+        return redirect(url_for('views.home'))
+
     if request.method == 'POST':
         email = request.form['email']
         first_name = request.form['nome']
@@ -62,8 +71,10 @@ def sign_up():
             flash('A sua senha deve possuir entre 8 e 24 caracteres', category='error')
         else:
             new_user = User(email=email, name=first_name, last_name=last_name,
-                            password=generate_password_hash(password, method='scrypt'))
+                            password=generate_password_hash(password, method='scrypt'), created_at=datetime.utcnow(),
+                            last_login=datetime.utcnow())
             db.session.add(new_user)
+
             db.session.commit()
 
             login_user(new_user, remember=True)
@@ -78,4 +89,4 @@ def sign_up():
 
             return response
 
-    return render_template('sign-up.html')
+    return render_template('sign-up.html', user=current_user)

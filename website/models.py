@@ -18,9 +18,12 @@ class User(UserMixin, db.Model):
     last_name = db.Column(db.String(100))
     email = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(30))
+    created_at = db.Column(db.DateTime(timezone=True), default=func.now())
+    last_login = db.Column(db.DateTime(timezone=True), onupdate=func.now())
     expenses = db.relationship('Expense', backref='user')
     permissions = db.relationship('Permission', foreign_keys=[Permission.owner_id], backref='owner')
     guest_permissions = db.relationship('Permission', foreign_keys=[Permission.guest_id], backref='guest')
+    categories = db.relationship('Category', backref='user', lazy='dynamic')
 
 
 class Category(db.Model):
@@ -29,6 +32,7 @@ class Category(db.Model):
     name = db.Column(db.String(100))
     description = db.Column(db.String(255))
     expenses = db.relationship('Expense', backref='category')
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
 class Expense(db.Model):
@@ -40,16 +44,9 @@ class Expense(db.Model):
     value = db.Column(db.Float)
     is_installment = db.Column(db.Boolean)
     installment_count = db.Column(db.Integer)
+    installment_value = db.Column(db.Float)
+    due_date = db.Column(db.String(10), default=None)
     name = db.Column(db.String(100))
     comment = db.Column(db.String(500))
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
-    installments = db.relationship('Installment', backref='expense')
 
-
-class Installment(db.Model):
-    __tablename__ = 'installments'
-    id = db.Column(db.Integer, primary_key=True)
-    expense_id = db.Column(db.Integer, db.ForeignKey('expenses.id'))
-    installment_number = db.Column(db.Integer)
-    value = db.Column(db.Float)
-    due_date = db.Column(db.String(10))

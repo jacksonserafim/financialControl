@@ -2,6 +2,32 @@
 {% block title %} Página Inicial {% endblock %}
 
 {% block content %}
-<h1>HOMEPAGE</h1>
+<div class="expenses">
+    <h2>Despesas</h2>
+    {% if user.expenses %}
+    <ul class="list-group list-group-flush">
+        {% for expense in user.expenses %}
+        <li class="list-group-item">
+            <strong>Nome:</strong> {{ expense.name }}<br>
+            <strong>Valor da despesa:</strong> R$ {{ '%.2f'|format(expense.value|float) }}<br>
+            <strong>Data da despesa:</strong> {{ expense.date.split('-')[2] }}/{{ expense.date.split('-')[1] }}/{{ expense.date.split('-')[0] }}<br>
+            <strong>Observação:</strong> {{ expense.comment }}<br>
+            {% if expense.is_installment %}
+            <strong>Parcelas:</strong><br>
+            <ul>
+                <li>
+                    Valor: R$ {{ '%.2f'|format(expense.installment_value|float) }}<br>
+                    Inicio: {{ expense.due_date.split('-')[2] }}/{{ expense.due_date.split('-')[1] }}/{{ expense.due_date.split('-')[0] }}<br>
+                    Número de parcelas: {{ expense.installment_count }}<br>
+                </li>
+            </ul>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>Nenhuma despesa encontrada.</p>
+    {% endif %}
+</div>
 
 {% endblock %}

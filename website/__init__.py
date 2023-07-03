@@ -18,7 +18,7 @@ def create_app():
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/auth')
 
-    from .models import User, Category, Expense, Installment, Permission
+    from .models import User, Category, Expense, Permission
 
     with app.app_context():
         db.create_all()

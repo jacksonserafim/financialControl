@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<style>
+    .link-span {
+        color: blue;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .link-span:hover {
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
+
+{% block title %} Adicionar nova despesa {% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Criar Despesa</h1>
+    <form method="POST">
+        <div class="form-group">
+            <label for="name">Nome:</label>
+            <input type="text" id="name" name="name" class="form-control" placeholder="Despesa" required>
+        </div>
+
+        <div class="form-group">
+            <div class="form-check">
+                <input type="checkbox" id="is_installment" name="is_installment" class="form-check-input">
+                <label for="is_installment" class="form-check-label">Parcelado</label>
+            </div>
+        </div>
+
+        <div id="installment-fields" style="display: none;">
+            <!-- Campos para despesas parceladas -->
+            <div class="form-group">
+                <label for="installment_value">Valor da Parcela:</label>
+                <input type="text" id="installment_value" name="installment_value"
+                       oninput="formatarMoeda('installment_value')" class="form-control" step="0.01">
+            </div>
+            <div class="form-group">
+                <label for="installment_count">Número de Parcelas:</label>
+                <input type="number" id="installment_count" name="installment_count" class="form-control" value="1">
+            </div>
+            <div class="form-group">
+                <label>Valor Restante:</label>
+                <span id="valor_restante"></span>
+            </div>
+            <div class="form-group">
+                <label for="due_date">Inicio da parcela:</label>
+                <input type="date" id="due_date" name="due_date" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Informações das Parcelas:</label>
+                <div id="parcelas-list">
+                    <!-- Os três primeiros itens da lista de parcelas são exibidos aqui -->
+                </div>
+                <div id="show-all-installments" style="display: none;">
+                    <!-- Os demais itens da lista de parcelas são exibidos aqui quando o usuário clica em "Ver todas as parcelas" -->
+                </div>
+                <span id="show-installments-span" class="link-span" style="display: none;">Ver todas as parcelas</span>
+            </div>
+        </div>
+
+        <div class="form-group" id="value-field">
+            <label for="value">Valor total:</label>
+            <input type="text" id="value" name="value" oninput="formatarMoeda('value')" placeholder="Insira o valor"
+                   class="form-control">
+        </div>
+
+        <div class="form-group" id="date-field">
+            <label for="date">Data:</label>
+            <input type="date" id="date" name="date" class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label for="category">Categoria:</label>
+            <select id="category" name="category" class="form-control">
+                <option value="" selected disabled>Selecione uma categoria</option>
+                <option value="1">Alimentação</option>
+                <option value="2">Transporte</option>
+                <option value="3">Moradia</option>
+                <option value="4">Lazer</option>
+                <option value="5">Educação</option>
+                {% for category in user.categories %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="comment">Observação:</label>
+            <textarea id="comment" name="comment" class="form-control" maxlength="500"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Criar Despesa</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='expense.js') }}"></script>
+{% endblock %}
