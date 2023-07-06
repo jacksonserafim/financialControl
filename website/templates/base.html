@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-bs-theme="dark">
 <head>
     <meta charset="UTF-3">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,6 +14,7 @@
             href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
             crossorigin="anonymous"
     />
+    <link rel="icon" href="../static/images/rocket.png" type="image/png">
 
     {% block head %}
     {% endblock %}
@@ -52,18 +53,23 @@
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
-    {% else %}
+    {% elif category == 'success' %}
     <div class="alert alert-success alter-dismissable fade show" role="alert">
       {{ message }}
       <button type="button" class="close" data-dismiss="alert">
         <span aria-hidden="true">&times;</span>
-      </button>
+    </button>
+    </div>
+    {% else %}
+    <div class="alert alert-primary" role="alert">
+    {{ message }}
     </div>
     {% endif %} {% endfor %} {% endif %} {% endwith %}
     <div class="container">
-        <div>{% block content %}
+    <div>{% block content %}
 
-            {% endblock %}</div>
+        {% endblock %}
+    </div>
     </div>
     <script
         src="https://code.jquery.com/jquery-3.2.1.slim.min.js"

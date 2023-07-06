@@ -48,5 +48,7 @@ class Expense(db.Model):
     due_date = db.Column(db.String(10), default=None)
     name = db.Column(db.String(100))
     comment = db.Column(db.String(500))
+    default_cat = db.Column(db.String(20), default='Despesa')
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
+
 

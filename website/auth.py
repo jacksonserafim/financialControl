@@ -12,7 +12,6 @@ auth = Blueprint('auth', __name__)
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('views.home'))
-
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
@@ -31,7 +30,7 @@ def login():
                 flash('Senha incorreta, tente novamente!', category='error')
         else:
             flash('E-mail não registrado', category='error')
-
+    flash('PROJETO EM DESENVOLVIMENTO - Muitos bugs e falta de funcionalidades', category='primary')
     return render_template('login.html', user=current_user)
 
 
@@ -39,7 +38,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash('Sessão encerrada!')
+    flash('Sessão encerrada!', category='success')
     return redirect(url_for('auth.login'))
 
 

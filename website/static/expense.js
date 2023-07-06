@@ -1,66 +1,98 @@
 function formatarMoeda(inputId) {
-    const input = document.getElementById(inputId);
-    const valor = input.value.replace(/\D/g, '');
-    const parsedValor = parseFloat(valor);
+  const input = document.getElementById(inputId);
+  const valor = input.value.replace(/\D/g, '');
+  const parsedValor = parseFloat(valor);
 
-    if (!isNaN(parsedValor)) {
-        input.value = (parsedValor / 100).toLocaleString('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-        });
-    } else {
-        input.value = '';
-    }
+  if (!isNaN(parsedValor)) {
+    input.value = (parsedValor / 100).toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
+  } else {
+    input.value = '';
+  }
 }
 
-$(document).ready(function () {
-    $("#is_installment").on("change", function () {
-        if ($(this).is(":checked")) {
-            $("#installment-fields").show();
-            $("#value-field").hide();
-            $("#date-field").hide();
-            calcularValorRestante();
-            calcularInformacoesParcelas();
-        } else {
-            $("#installment-fields").hide();
-            $("#value-field").show();
-            $("#date-field").show();
-            $("#valor_restante").text("");
-            $("#parcelas-list").empty();
-        }
-    });
+$(document).ready(function() {
+  $("#is_installment").on("change", function() {
+    if ($(this).is(":checked")) {
+      $("#installment-fields").show();
+      $("#value-field").hide();
+      $("#date-field").hide();
+      calcularValorRestante();
+      calcularInformacoesParcelas();
+    } else {
+      $("#installment-fields").hide();
+      $("#value-field").show();
+      $("#date-field").show();
+      $("#valor_restante").text("");
+      $("#parcelas-list").empty();
+    }
+  });
 
-    $("#installment_value").on("input", function () {
-        formatarMoeda("installment_value");
-        calcularValorRestante();
-        calcularInformacoesParcelas();
-    });
+  $("#installment_value").on("input", function() {
+    formatarMoeda("installment_value");
+    calcularValorRestante();
+    calcularInformacoesParcelas();
+  });
 
-    $("#installment_count").on("change", function () {
-        calcularValorRestante();
-        calcularInformacoesParcelas();
-    });
-    $("#due_date").on("change", function () {
-        calcularInformacoesParcelas();
-    });
+  $("#installment_count").on("change", function() {
+    calcularValorRestante();
+    calcularInformacoesParcelas();
+  });
+
+  $("#due_date").on("change", function() {
+    calcularInformacoesParcelas();
+  });
+
+  // Adicionando evento de alteração ao campo do valor total
+  $("#total_value").on("input", function() {
+    formatarMoeda("value");
+    calcularValorParcela();
+    calcularValorRestante();
+    calcularInformacoesParcelas();
+  });
+
+  // Chamar as funções de cálculo ao terminar de carregar a página
+  calcularValorParcela();
+  calcularValorRestante();
+  calcularInformacoesParcelas();
 });
 
+function calcularValorParcela() {
+  const valorTotal = document.getElementById("value").value.replace(/\D/g, '');
+  const numeroParcelas = parseInt(document.getElementById("installment_count").value);
+
+  const parsedValorTotal = parseFloat(valorTotal);
+
+  if (!isNaN(parsedValorTotal) && numeroParcelas > 0) {
+    const valorParcela = (parsedValorTotal / numeroParcelas).toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
+
+    $("#installment_value").val(valorParcela);
+  } else {
+    $("#installment_value").val('');
+  }
+}
+
 function calcularValorRestante() {
-    const valorParcela = document.getElementById("installment_value").value.replace(/\D/g, '');
-    const numeroParcelas = parseInt(document.getElementById("installment_count").value);
+  const valorParcela = document.getElementById("installment_value").value.replace(/\D/g, '');
+  const numeroParcelas = parseInt(document.getElementById("installment_count").value);
 
-    const parsedValorParcela = parseFloat(valorParcela);
+  const parsedValorParcela = parseFloat(valorParcela);
 
-    if (!isNaN(parsedValorParcela) && numeroParcelas > 0) {
-        const valorRestante = ((parsedValorParcela * numeroParcelas) / 100).toLocaleString('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-        });
+  if (!isNaN(parsedValorParcela) && numeroParcelas > 0) {
+    const valorRestante = ((parsedValorParcela * numeroParcelas) / 100).toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
 
-        $("#valor_restante").text(valorRestante);
-    } else {
-        $("#valor_restante").text("");
-    }
+    $("#valor_restante").text(valorRestante);
+  } else {
+    $("#valor_restante").text("");
+  }
 }
 
 let isShowingAllInstallments = false;
@@ -88,36 +120,26 @@ function calcularInformacoesParcelas() {
       const dataParcelaFormatada = dataParcela.format('DD/MM/YYYY');
 
       const listItem = $("<li>").text(`Parcela ${i}: Valor ${valorParcelaFormatado} - Vencimento ${dataParcelaFormatada}`);
+
       parcelasList.append(listItem);
     }
 
     if (numeroParcelas > 3) {
-      const showAllSpan = $("#show-installments-span");
+      const showAllSpan = $("<span>")
+        .attr("id", "show-installments-span")
+        .addClass("link-span")
+        .text("Ver todas as parcelas")
+        .on("click", function () {
+          isShowingAllInstallments = !isShowingAllInstallments;
+          calcularInformacoesParcelas();
+        });
 
-      if (isShowingAllInstallments) {
-        showAllSpan.text("Ocultar parcelas");
-      } else {
-        showAllSpan.text("Ver todas as parcelas");
-      }
+      const showAllDiv = $("<div>").attr("id", "show-all-installments").append(showAllSpan);
 
-      showAllSpan.show();
-    } else {
-      $("#show-installments-span").hide();
+      parcelasList.after(showAllDiv);
     }
   }
 }
 
-$("#show-installments-span").on("click", function() {
-  isShowingAllInstallments = !isShowingAllInstallments;
-  calcularInformacoesParcelas();
-});
-
-
-$("#show-installments-button").on("click", function () {
-    isShowingAllInstallments = !isShowingAllInstallments;
-    calcularInformacoesParcelas();
-});
-
-
-
-
+// Chamar a função de cálculo ao terminar de carregar a página
+calcularInformacoesParcelas();

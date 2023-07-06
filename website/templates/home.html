@@ -1,19 +1,28 @@
 {% extends "base.html" %}
 {% block title %} Página Inicial {% endblock %}
 
+{% block head %}
+
+{% endblock %}
+
 {% block content %}
 <div class="expenses">
     <h2>Despesas</h2>
+    <h5>Valor total de despesas: R$ {{ '{:,.2f}'.format(total_value|float) }}</h5>
     {% if user.expenses %}
     <ul class="list-group list-group-flush">
         {% for expense in user.expenses %}
         <li class="list-group-item">
             <strong>Nome:</strong> {{ expense.name }}<br>
-            <strong>Valor da despesa:</strong> R$ {{ '%.2f'|format(expense.value|float) }}<br>
-            <strong>Data da despesa:</strong> {{ expense.date.split('-')[2] }}/{{ expense.date.split('-')[1] }}/{{ expense.date.split('-')[0] }}<br>
+            <strong>Valor da despesa:</strong> R$ {{ '{:,.2f}'.format(expense.value|float) }}<br>
+            <strong>Data da despesa:</strong> {{ expense.date.split('-')[2] }}/{{ expense.date.split('-')[1] }}/{{
+            expense.date.split('-')[0] }}<br>
+            <strong>Categoria:</strong> {{ expense.default_cat }}<br>
+            {% if expense.comment != ''%}
             <strong>Observação:</strong> {{ expense.comment }}<br>
+            {% endif %}
             {% if expense.is_installment %}
-            <strong>Parcelas:</strong><br>
+            <strong>Parcelas:</strong>
             <ul>
                 <li>
                     Valor: R$ {{ '%.2f'|format(expense.installment_value|float) }}<br>
@@ -22,6 +31,7 @@
                 </li>
             </ul>
             {% endif %}
+            <a href="{{ url_for('views.edit_expense', expense_id=expense.id) }}">Editar</a>
         </li>
         {% endfor %}
     </ul>

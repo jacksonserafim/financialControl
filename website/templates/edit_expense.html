@@ -1,46 +1,35 @@
 {% extends "base.html" %}
-{% block head %}
-<style>
-    .link-span {
-        color: blue;
-        text-decoration: underline;
-        cursor: pointer;
-    }
+{% block title %} Página Inicial {% endblock %}
 
-    .link-span:hover {
-        text-decoration: none;
-    }
-</style>
+{% block head %}
+
 {% endblock %}
 
-{% block title %} Adicionar nova despesa {% endblock %}
-
 {% block content %}
-<div class="container">
-    <h1>Criar Despesa</h1>
-    <form method="POST">
-        <div class="form-group">
-            <label for="name">Nome:</label>
-            <input type="text" id="name" name="name" class="form-control" placeholder="Despesa" required>
-        </div>
+<h1>Editar Despesa</h1>
+<form method="POST" action="{{ url_for('views.edit_expense', expense_id=expense.id) }}">
+    <div class="form-group">
+        <label for="name">Nome:</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{ expense.name }}" required>
+    </div>
 
-        <div class="form-group">
+    <div class="form-group">
             <div class="form-check">
-                <input type="checkbox" id="is_installment" name="is_installment" class="form-check-input">
+                <input type="checkbox" id="is_installment" name="is_installment" class="form-check-input" {% if expense.is_installment == 1 %} checked {% endif %}>
                 <label for="is_installment" class="form-check-label">Parcelado</label>
             </div>
         </div>
 
-        <div id="installment-fields" style="display: none;">
+        <div id="installment-fields" {% if expense.is_installment == 0 %} style="display: none;" {% endif %}>
             <!-- Campos para despesas parceladas -->
             <div class="form-group">
                 <label for="installment_value">Valor da Parcela:</label>
                 <input type="text" id="installment_value" name="installment_value"
-                       oninput="formatarMoeda('installment_value')" class="form-control" step="0.01">
+                       oninput="formatarMoeda('installment_value')" value="{{ expense.installment_value }}" class="form-control" step="0.01">
             </div>
             <div class="form-group">
                 <label for="installment_count">Número de Parcelas:</label>
-                <input type="number" id="installment_count" name="installment_count" class="form-control" value="1">
+                <input type="number" id="installment_count" name="installment_count" class="form-control" value="{{ expense.installment_count }}">
             </div>
             <div class="form-group">
                 <label>Valor Restante:</label>
@@ -48,7 +37,7 @@
             </div>
             <div class="form-group">
                 <label for="due_date">Inicio da parcela:</label>
-                <input type="date" id="due_date" name="due_date" class="form-control">
+                <input type="date" id="due_date" name="due_date" value="{{ expense.due_date }}" class="form-control">
             </div>
             <div class="form-group">
                 <label>Informações das Parcelas:</label>
@@ -61,23 +50,13 @@
                 <span id="show-installments-span" class="link-span" style="display: none;">Ver todas as parcelas</span>
             </div>
         </div>
-
-        <div class="form-group" id="value-field">
-            <label for="currency">Moeda:</label>
-            <select id="currency" name="category" class="form-control">
-                <option value="" selected disabled>Selecione uma moeda</option>
-                {% for category in user.categories %}
-                <option value="{{ category.id }}">{{ category.name }}</option>
-                {% endfor %}
-            </select>
-            <label for="value">Valor total:</label>
+        <label for="value">Valor total:</label>
             <input type="text" id="value" name="value" oninput="formatarMoeda('value')" placeholder="Insira o valor"
-                   class="form-control">
-        </div>
+                   class="form-control" value="{{ expense.value }}" {% if expense.is_installment == 1 %} aria-disabled="true" {% endif %}>
 
         <div class="form-group" id="date-field">
             <label for="date">Data:</label>
-            <input type="date" id="date" name="date" class="form-control">
+            <input type="date" id="date" name="date" class="form-control" value="{{ expense.date }}">
         </div>
 
         <div class="form-group">
@@ -97,12 +76,12 @@
 
         <div class="form-group">
             <label for="comment">Observação:</label>
-            <textarea id="comment" name="comment" class="form-control" maxlength="500"></textarea>
+            <textarea id="comment" name="comment" class="form-control" maxlength="500">{{ expense.comment }}</textarea>
         </div>
 
-        <button type="submit" class="btn btn-primary">Criar Despesa</button>
-    </form>
-</div>
+    <button type="submit" class="btn btn-primary">Salvar</button>
+</form>
+
 {% endblock %}
 
 {% block script %}
