@@ -1,0 +1,1 @@
+Para instalar as dependências use `pip install -r requirements.txt`

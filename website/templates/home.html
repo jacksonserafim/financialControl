@@ -2,13 +2,53 @@
 {% block title %} Página Inicial {% endblock %}
 
 {% block head %}
+<style>
+    .confirmation-dialog {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        z-index: 9999;
+    }
 
+    .confirmation-dialog-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    .confirmation-dialog-buttons {
+        margin-top: 20px;
+    }
+
+    .confirmation-dialog-buttons button {
+        margin-right: 10px;
+    }
+
+</style>
 {% endblock %}
 
 {% block content %}
 <div class="expenses">
     <h2>Despesas</h2>
     <h5>Valor total de despesas: R$ {{ '{:,.2f}'.format(total_value|float) }}</h5>
+    <div id="confirmation-dialog" class="confirmation-dialog">
+        <div class="confirmation-dialog-content">
+            <p id="confirmation-message"></p>
+            <div class="confirmation-dialog-buttons">
+                <button id="confirm-button" class="btn btn-primary">OK</button>
+                <button id="cancel-button" class="btn btn-primary">Cancel</button>
+            </div>
+        </div>
+    </div>
     {% if user.expenses %}
     <ul class="list-group list-group-flush">
         {% for expense in user.expenses %}
@@ -26,12 +66,17 @@
             <ul>
                 <li>
                     Valor: R$ {{ '%.2f'|format(expense.installment_value|float) }}<br>
-                    Inicio: {{ expense.due_date.split('-')[2] }}/{{ expense.due_date.split('-')[1] }}/{{ expense.due_date.split('-')[0] }}<br>
+                    Inicio: {{ expense.due_date.split('-')[2] }}/{{ expense.due_date.split('-')[1] }}/{{
+                    expense.due_date.split('-')[0] }}<br>
                     Número de parcelas: {{ expense.installment_count }}<br>
                 </li>
             </ul>
             {% endif %}
             <a href="{{ url_for('views.edit_expense', expense_id=expense.id) }}">Editar</a>
+            <a href="#"
+               onclick="showConfirmationDialog('{{ url_for('views.delete_expense', expense_id=expense.id) }}', 'Você tem certeza de que deseja excluir a despesa {{ expense.name }}?');">
+                Excluir
+            </a>
         </li>
         {% endfor %}
     </ul>
@@ -39,5 +84,29 @@
     <p>Nenhuma despesa encontrada.</p>
     {% endif %}
 </div>
+
+{% endblock %}
+
+{% block script %}
+
+<script>
+    function showConfirmationDialog(deleteUrl, message) {
+        const confirmationDialog = document.getElementById('confirmation-dialog');
+        const confirmationMessage = document.getElementById('confirmation-message');
+        const confirmButton = document.getElementById('confirm-button');
+        const cancelButton = document.getElementById('cancel-button');
+
+        confirmationMessage.textContent = message;
+        confirmationDialog.style.display = 'block';
+
+        confirmButton.onclick = function () {
+            window.location.href = deleteUrl;
+        };
+
+        cancelButton.onclick = function () {
+            confirmationDialog.style.display = 'none';
+        };
+    }
+</script>
 
 {% endblock %}

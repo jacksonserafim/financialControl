@@ -3,6 +3,7 @@ from flask_login import UserMixin
 from sqlalchemy.sql import func
 
 
+# Responsável pela criação e controle do banco de dados
 class Permission(db.Model):
     __tablename__ = 'permissions'
     id = db.Column(db.Integer, primary_key=True)
@@ -50,5 +51,3 @@ class Expense(db.Model):
     comment = db.Column(db.String(500))
     default_cat = db.Column(db.String(20), default='Despesa')
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
-
-
