@@ -72,7 +72,8 @@
                 </li>
             </ul>
             {% endif %}
-            <a href="{{ url_for('views.edit_expense', expense_id=expense.id) }}">Editar</a>
+            <!--<a href="{{ url_for('views.edit_expense', expense_id=expense.id) }}">Editar</a>-->
+            <a href="#" onclick="window.alert('Função indisponivel no momento (Ta com bug pra variar 😢)')">Editar</a>
             <a href="#"
                onclick="showConfirmationDialog('{{ url_for('views.delete_expense', expense_id=expense.id) }}', 'Você tem certeza de que deseja excluir a despesa {{ expense.name }}?');">
                 Excluir
