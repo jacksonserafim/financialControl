@@ -1,4 +1,4 @@
 Para instalar as dependências use `pip install -r requirements.txt`
 
 Site para testar(carregamento lento as vezes por ser gratuito a hospedagem): https://rocketnancial.onrender.com/ 
-* Servidor usado é apenas para teste, portanto não há problemas em ficar exposto
+* Banco de dados não esta mais exposto (feita a exclusão/troca do antigo e adicionado variáveis de ambiente para informações novas)
