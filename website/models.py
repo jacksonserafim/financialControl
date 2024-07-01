@@ -18,7 +18,7 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
     email = db.Column(db.String(150), unique=True)
-    password = db.Column(db.String(30))
+    password = db.Column(db.String(256))
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
     last_login = db.Column(db.DateTime(timezone=True), onupdate=func.now())
     expenses = db.relationship('Expense', backref='user')
